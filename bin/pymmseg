@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import sys
+import getopt
+from os.path import dirname, join
+import pstats
+import cProfile
+from io import StringIO
+
+sys.path.append(join(dirname(__file__), '..'))
+
+import mmseg
+
+def profile(fn):
+    def wrapper(*args, **kwargs):
+        profiler = cProfile.Profile()
+        stream = StringIO()
+        profiler.enable()
+        try:
+            res = fn(*args, **kwargs)
+        finally:
+            profiler.disable()
+            stats = pstats.Stats(profiler, stream=stream)
+            stats.sort_stats('time')
+            print("", file=stream)
+            print("=" * 100, file=stream)
+            print("Stats:", file=stream)
+            stats.print_stats()
+
+            print("=" * 100, file=stream)
+            print("Callers:", file=stream)
+            stats.print_callers()
+
+            print("=" * 100, file=stream)
+            print("Callees:", file=stream)
+            stats.print_callees()
+            print(stream.getvalue(), file=sys.stderr)
+            stream.close()
+        return res
+    return wrapper
+
+
+def print_usage():
+    print("""\
+mmseg  Segment Chinese text. Read from stdin and print to stdout.
+
+Options:
+  -h
+  --help      Print this message
+
+  -s
+  --separator Select the separator of the segmented text. Default is
+              space.
+    """)
+    sys.exit(0)
+
+
+separator = " "
+
+optlst, args = getopt.getopt(sys.argv[1:], 'hs:')
+
+for opt, val in optlst:
+    if opt == '-h':
+        print_usage()
+
+    elif opt == '-s':
+        separator = val
+
+# load default dictionaries
+mmseg.dict_load_defaults()
+
+sys.stdout.reconfigure(encoding='utf-8')
+
+@profile
+def process_tokens(stdin, separator):
+    ret = ''
+    first = True
+    algor = mmseg.Algorithm(stdin)
+    try:
+        for tk in algor:
+            if not first:
+                ret += separator
+            ret += tk.text.decode('utf8')
+            first = False
+    except RuntimeError as e:
+        pass
+    return ret
+
+sys.stdout.write(process_tokens(sys.stdin.read(), separator))
+sys.stdout.write('\n')
+
