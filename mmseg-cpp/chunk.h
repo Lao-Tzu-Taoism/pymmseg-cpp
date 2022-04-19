@@ -10,6 +10,7 @@ namespace rmmseg {
  * A chunk stores 3 (or less) successive words.
  */
 struct Chunk {
+    // total length in `mandarin char`
     int total_length() const {
         int len = 0;
         for (int i = 0; i < n; ++i) len += std::abs(words[i]->length);
@@ -20,8 +21,10 @@ struct Chunk {
         return len;
     }
 
+    // mean length
     double average_length() const { return ((double)total_length()) / n; }
 
+    // variance length
     double variance() const {
         double avg = average_length();
         double sqr_sum = 0;

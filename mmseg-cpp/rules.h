@@ -7,6 +7,7 @@
 #include "chunk.h"
 
 namespace rmmseg {
+
 template <typename Cmp>
 void take_highest(std::vector<Chunk> &chunks, const Cmp &cmp) {
     unsigned int i = 1, j;
@@ -25,6 +26,7 @@ struct MMCmp_t {
     }
 } MMCmp;
 
+// total length largest will put in chunks[0]
 void mm_filter(std::vector<Chunk> &chunks) { take_highest(chunks, MMCmp); }
 
 struct LAWLCmp_t {
@@ -36,6 +38,7 @@ struct LAWLCmp_t {
     }
 } LAWLCmp;
 
+// avg length largest will put in chunks[0]
 void lawl_filter(std::vector<Chunk> &chunks) { take_highest(chunks, LAWLCmp); }
 
 struct SVWLCmp_t {
@@ -47,6 +50,7 @@ struct SVWLCmp_t {
     }
 } SVWLCmp;
 
+// length var small will put in chunks[0]
 void svwl_filter(std::vector<Chunk> &chunks) { take_highest(chunks, SVWLCmp); }
 
 struct LSDMFOCWCmp_t {
@@ -56,9 +60,11 @@ struct LSDMFOCWCmp_t {
     }
 } LSDMFOCWCmp;
 
+// degree_of_morphemic_freedom large will put int chunks[0]
 void lsdmfocw_filter(std::vector<Chunk> &chunks) {
     take_highest(chunks, LSDMFOCWCmp);
 }
+
 }
 
 #endif /* _RULES_H_ */

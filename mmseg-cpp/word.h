@@ -11,7 +11,7 @@ const int word_embed_len = 4; /* at least 1 char (3 bytes+'\0') */
 struct Word {
     unsigned char nbytes; /* number of bytes */
     char length;          /* number of characters */
-    unsigned short freq;
+    unsigned short freq;  /*char: freq, word: 0*/
     char text[word_embed_len];
 };
 

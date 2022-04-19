@@ -63,7 +63,7 @@ class Algorithm {
 
     /* match word caches */
     static const int match_cache_size = 3;
-    typedef std::pair<int, std::vector<Word *>> match_cache_t;
+    typedef std::pair<int, std::vector<Word *>> match_cache_t; // [pos, vector<Word*>]
     match_cache_t m_match_cache[match_cache_size];
     int m_match_cache_i;
 };

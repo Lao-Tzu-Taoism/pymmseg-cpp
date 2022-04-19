@@ -9,7 +9,7 @@ struct Token {
     //
     // if length is 0, this is an empty token
     const char *text;
-    int length;
+    int length; // for n bytes
 };
 }
 

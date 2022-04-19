@@ -10,8 +10,8 @@ struct Entry {
     Entry *next;
 };
 
-const size_t init_size = 262147;
-const size_t max_density = 5;
+const size_t init_size = 262147; // init hash table size
+const size_t max_density = 5; // when to rehash
 /*
   Table of prime numbers 2^n+a, 2<=n<=30.
 */
@@ -47,6 +47,7 @@ static size_t new_size() {
 }
 
 static unsigned int hash(const char *str, int len) {
+    // hash code
     unsigned int key = 0;
     while (len--) {
         key += *str++;
@@ -110,6 +111,7 @@ void add(Word *word) {
     unsigned int h = hash_val % n_bins;
     Entry *entry = bins[h];
     if (!entry) {
+        // new entry
         if (n_entries / n_bins > max_density) {
             rehash();
             h = hash_val % n_bins;
@@ -125,6 +127,7 @@ void add(Word *word) {
 
     bool done = false;
     do {
+        // overwrite entry
         if (word->nbytes == entry->word->nbytes &&
             strncmp(word->text, entry->word->text, word->nbytes) == 0) {
             /* Overwriting. WARNING: the original Word object is
@@ -141,6 +144,7 @@ void add(Word *word) {
     } while (entry);
 
     if (!done) {
+        // insert before link head
         entry = static_cast<Entry *>(pool_alloc(sizeof(Entry)));
         entry->word = word;
         entry->next = bins[h];
